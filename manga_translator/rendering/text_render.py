@@ -6,7 +6,7 @@ import freetype
 import functools
 from pathlib import Path
 from typing import Tuple, Optional, List
-from hyphen import Hyphenator
+from hyphen import Hyphenator as Horig
 from hyphen.dictools import LANGUAGES as HYPHENATOR_LANGUAGES
 from langcodes import standardize_tag
 
@@ -17,6 +17,24 @@ try:
     HYPHENATOR_LANGUAGES.append('fr_FR')
 except Exception:
     pass
+
+
+def Hyphenator(l: str="en_US"):
+    assert l == "en_US", "other languages not supported yet"
+    import requests
+    from pathlib import Path
+    from hyphen.dictools import Dictionaries
+
+    HYPHEN_PATH = Path('./dictools')
+    HYPHEN_PATH.mkdir(exist_ok=True)
+    DIC_PATH = HYPHEN_PATH / "hyph_{l}.dic"
+    URL = f'https://github.com/LibreOffice/dictionaries/raw/master/en/hyph_{l}.dic'
+    if not DIC_PATH.exists():
+        res = requests.get(URL)
+        DIC_PATH.write_bytes(res.content)
+
+    Dictionaries("dictools").add(l, DIC_PATH.read_bytes(), [l], URL)
+    return Horig(l, directory=str(HYPHEN_PATH), use_description=False)
 
 CJK_H2V = {
     "‥": "︰",

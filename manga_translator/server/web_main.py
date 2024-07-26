@@ -88,7 +88,15 @@ DEFAULT_TRANSLATION_PARAMS = {}
 AVAILABLE_TRANSLATORS = []
 FORMAT = ''
 
-app = web.Application(client_max_size = 1024 * 1024 * 50)
+@web.middleware
+async def cors_middleware(request, handler):
+    response = await handler(request)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
+    return response
+
+app = web.Application(client_max_size=1024 * 1024 * 50, middlewares=[cors_middleware])
+
 routes = web.RouteTableDef()
 
 
