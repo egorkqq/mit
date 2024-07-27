@@ -293,14 +293,15 @@
           return this.file ? URL.createObjectURL(this.file) : null;
         },
         detectionResolution: "M",
-        textDetector: "auto",
+        textDetector: "ctd",
         renderTextDirection: "auto",
-        translator: "youdao",
+        translator: "none",
         validTranslators: [
           "youdao",
           "baidu",
           "google",
           "deepl",
+          "sugoi",
           "papago",
           "caiyun",
           "offline",
@@ -311,7 +312,7 @@
           if (key == "none") return "No Text";
           return key ? key[0].toUpperCase() + key.slice(1) : "";
         },
-        targetLanguage: "CHS",
+        targetLanguage: "ENG",
         ondrop(e) {
           const file = e.dataTransfer?.files?.[0];
           if (file && acceptTypes.includes(file.type)) {
