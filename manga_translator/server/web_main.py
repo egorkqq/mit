@@ -142,6 +142,18 @@ async def result_async(request):
     mime = mimetypes.guess_type(filepath)[0] or 'application/octet-stream'
     return web.Response(body=stream.getvalue(), content_type=mime)
 
+@routes.get("/input/{taskid}")
+async def result_async(request):
+    global FORMAT
+    filepath = os.path.join('result', request.match_info.get('taskid'), f'input.png')
+    if not os.path.exists(filepath):
+        return web.Response(status=404, text='Not Found')
+    stream = BytesIO()
+    with open(filepath, 'rb') as f:
+        stream.write(f.read())
+    mime = mimetypes.guess_type(filepath)[0] or 'application/octet-stream'
+    return web.Response(body=stream.getvalue(), content_type=mime)
+
 @routes.get("/result-type")
 async def file_type_async(request):
     global FORMAT
