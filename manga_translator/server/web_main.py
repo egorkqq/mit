@@ -115,20 +115,20 @@ def constant_compare(a, b):
         result |= x ^ y
     return result == 0
 
-@routes.get("/")
-async def index_async(request):
-    global AVAILABLE_TRANSLATORS
-    with open(os.path.join(SERVER_DIR_PATH, 'ui.html'), 'r', encoding='utf8') as fp:
-        content = fp.read()
-        if AVAILABLE_TRANSLATORS:
-            content = re.sub(r'(?<=translator: )(.*)(?=,)', repr(AVAILABLE_TRANSLATORS[0]), content)
-            content = re.sub(r'(?<=validTranslators: )(\[.*\])(?=,)', repr(AVAILABLE_TRANSLATORS), content)
-        return web.Response(text=content, content_type='text/html')
+# @routes.get("/")
+# async def index_async(request):
+#     global AVAILABLE_TRANSLATORS
+#     with open(os.path.join(SERVER_DIR_PATH, 'ui.html'), 'r', encoding='utf8') as fp:
+#         content = fp.read()
+#         if AVAILABLE_TRANSLATORS:
+#             content = re.sub(r'(?<=translator: )(.*)(?=,)', repr(AVAILABLE_TRANSLATORS[0]), content)
+#             content = re.sub(r'(?<=validTranslators: )(\[.*\])(?=,)', repr(AVAILABLE_TRANSLATORS), content)
+#         return web.Response(text=content, content_type='text/html')
 
-@routes.get("/manual")
-async def index_async(request):
-    with open(os.path.join(SERVER_DIR_PATH, 'manual.html'), 'r', encoding='utf8') as fp:
-        return web.Response(text=fp.read(), content_type='text/html')
+# @routes.get("/manual")
+# async def index_async(request):
+#     with open(os.path.join(SERVER_DIR_PATH, 'manual.html'), 'r', encoding='utf8') as fp:
+#         return web.Response(text=fp.read(), content_type='text/html')
 
 @routes.get("/result/{taskid}")
 async def result_async(request):
@@ -154,10 +154,10 @@ async def result_async(request):
     mime = mimetypes.guess_type(filepath)[0] or 'application/octet-stream'
     return web.Response(body=stream.getvalue(), content_type=mime)
 
-@routes.get("/result-type")
-async def file_type_async(request):
-    global FORMAT
-    return web.Response(text=f'{FORMAT}')
+# @routes.get("/result-type")
+# async def file_type_async(request):
+#     global FORMAT
+#     return web.Response(text=f'{FORMAT}')
 
 @routes.get("/queue-size")
 async def queue_size_async(request):
@@ -314,8 +314,8 @@ async def manual_trans_task(task_id, texts, translations):
         TASK_DATA[task_id]['trans_result'] = []
         print('Manual translation complete')
 
-@routes.post("/cancel-manual-request")
-async def cancel_manual_translation(request):
+# @routes.post("/cancel-manual-request")
+# async def cancel_manual_translation(request):
     rqjson = (await request.json())
     if 'task_id' in rqjson:
         task_id = rqjson['task_id']
@@ -334,8 +334,8 @@ async def cancel_manual_translation(request):
             return ret
     return web.json_response({})
 
-@routes.post("/post-manual-result")
-async def post_translation_result(request):
+# @routes.post("/post-manual-result")
+# async def post_translation_result(request):
     rqjson = (await request.json())
     if 'trans_result' in rqjson and 'task_id' in rqjson:
         task_id = rqjson['task_id']
@@ -356,8 +356,8 @@ async def post_translation_result(request):
             return ret
     return web.json_response({})
 
-@routes.post("/request-manual-internal")
-async def request_translation_internal(request):
+# @routes.post("/request-manual-internal")
+# async def request_translation_internal(request):
     global NONCE
     rqjson = await request.json()
     if constant_compare(rqjson.get('nonce'), NONCE):
@@ -368,8 +368,8 @@ async def request_translation_internal(request):
                 asyncio.gather(manual_trans_task(task_id, rqjson['texts'], rqjson['translations']))
     return web.json_response({})
 
-@routes.post("/get-manual-result-internal")
-async def get_translation_internal(request):
+# @routes.post("/get-manual-result-internal")
+# async def get_translation_internal(request):
     global NONCE
     rqjson = (await request.json())
     if constant_compare(rqjson.get('nonce'), NONCE):
@@ -475,8 +475,8 @@ async def submit_async(request):
         }
     return web.json_response({'task_id': task_id, 'status': 'successful'})
 
-@routes.post("/manual-translate")
-async def manual_translate_async(request):
+# @routes.post("/manual-translate")
+# async def manual_translate_async(request):
     x = await handle_post(request)
     if isinstance(x, tuple):
         img, size, selected_translator, target_language, detector, direction = x
