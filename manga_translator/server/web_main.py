@@ -316,70 +316,70 @@ async def manual_trans_task(task_id, texts, translations):
 
 # @routes.post("/cancel-manual-request")
 # async def cancel_manual_translation(request):
-    rqjson = (await request.json())
-    if 'task_id' in rqjson:
-        task_id = rqjson['task_id']
-        if task_id in TASK_DATA:
-            TASK_DATA[task_id]['cancel'] = ' '
-            while True:
-                await asyncio.sleep(0.1)
-                if TASK_STATES[task_id]['info'].startswith('error'):
-                    ret = web.json_response({'task_id': task_id, 'status': 'error'})
-                    break
-                if TASK_STATES[task_id]['finished']:
-                    ret = web.json_response({'task_id': task_id, 'status': 'cancelled'})
-                    break
-            del TASK_STATES[task_id]
-            del TASK_DATA[task_id]
-            return ret
-    return web.json_response({})
+    # rqjson = (await request.json())
+    # if 'task_id' in rqjson:
+    #     task_id = rqjson['task_id']
+    #     if task_id in TASK_DATA:
+    #         TASK_DATA[task_id]['cancel'] = ' '
+    #         while True:
+    #             await asyncio.sleep(0.1)
+    #             if TASK_STATES[task_id]['info'].startswith('error'):
+    #                 ret = web.json_response({'task_id': task_id, 'status': 'error'})
+    #                 break
+    #             if TASK_STATES[task_id]['finished']:
+    #                 ret = web.json_response({'task_id': task_id, 'status': 'cancelled'})
+    #                 break
+    #         del TASK_STATES[task_id]
+    #         del TASK_DATA[task_id]
+    #         return ret
+    # return web.json_response({})
 
 # @routes.post("/post-manual-result")
 # async def post_translation_result(request):
-    rqjson = (await request.json())
-    if 'trans_result' in rqjson and 'task_id' in rqjson:
-        task_id = rqjson['task_id']
-        if task_id in TASK_DATA:
-            trans_result = [r['t'] for r in rqjson['trans_result']]
-            TASK_DATA[task_id]['trans_result'] = trans_result
-            while True:
-                await asyncio.sleep(0.1)
-                if TASK_STATES[task_id]['info'].startswith('error'):
-                    ret = web.json_response({'task_id': task_id, 'status': 'error'})
-                    break
-                if TASK_STATES[task_id]['finished']:
-                    ret = web.json_response({'task_id': task_id, 'status': 'successful'})
-                    break
-            # remove old tasks
-            del TASK_STATES[task_id]
-            del TASK_DATA[task_id]
-            return ret
-    return web.json_response({})
+    # rqjson = (await request.json())
+    # if 'trans_result' in rqjson and 'task_id' in rqjson:
+    #     task_id = rqjson['task_id']
+    #     if task_id in TASK_DATA:
+    #         trans_result = [r['t'] for r in rqjson['trans_result']]
+    #         TASK_DATA[task_id]['trans_result'] = trans_result
+    #         while True:
+    #             await asyncio.sleep(0.1)
+    #             if TASK_STATES[task_id]['info'].startswith('error'):
+    #                 ret = web.json_response({'task_id': task_id, 'status': 'error'})
+    #                 break
+    #             if TASK_STATES[task_id]['finished']:
+    #                 ret = web.json_response({'task_id': task_id, 'status': 'successful'})
+    #                 break
+    #         # remove old tasks
+    #         del TASK_STATES[task_id]
+    #         del TASK_DATA[task_id]
+    #         return ret
+    # return web.json_response({})
 
 # @routes.post("/request-manual-internal")
 # async def request_translation_internal(request):
-    global NONCE
-    rqjson = await request.json()
-    if constant_compare(rqjson.get('nonce'), NONCE):
-        task_id = rqjson['task_id']
-        if task_id in TASK_DATA:
-            if TASK_DATA[task_id].get('manual', False):
-                # manual translation
-                asyncio.gather(manual_trans_task(task_id, rqjson['texts'], rqjson['translations']))
-    return web.json_response({})
+    # global NONCE
+    # rqjson = await request.json()
+    # if constant_compare(rqjson.get('nonce'), NONCE):
+    #     task_id = rqjson['task_id']
+    #     if task_id in TASK_DATA:
+    #         if TASK_DATA[task_id].get('manual', False):
+    #             # manual translation
+    #             asyncio.gather(manual_trans_task(task_id, rqjson['texts'], rqjson['translations']))
+    # return web.json_response({})
 
 # @routes.post("/get-manual-result-internal")
 # async def get_translation_internal(request):
-    global NONCE
-    rqjson = (await request.json())
-    if constant_compare(rqjson.get('nonce'), NONCE):
-        task_id = rqjson['task_id']
-        if task_id in TASK_DATA:
-            if 'trans_result' in TASK_DATA[task_id]:
-                return web.json_response({'result': TASK_DATA[task_id]['trans_result']})
-            elif 'cancel' in TASK_DATA[task_id]:
-                return web.json_response({'cancel':''})
-    return web.json_response({})
+    # global NONCE
+    # rqjson = (await request.json())
+    # if constant_compare(rqjson.get('nonce'), NONCE):
+    #     task_id = rqjson['task_id']
+    #     if task_id in TASK_DATA:
+    #         if 'trans_result' in TASK_DATA[task_id]:
+    #             return web.json_response({'result': TASK_DATA[task_id]['trans_result']})
+    #         elif 'cancel' in TASK_DATA[task_id]:
+    #             return web.json_response({'cancel':''})
+    # return web.json_response({})
 
 @routes.get("/task-state")
 async def get_task_state_async(request):
@@ -477,41 +477,41 @@ async def submit_async(request):
 
 # @routes.post("/manual-translate")
 # async def manual_translate_async(request):
-    x = await handle_post(request)
-    if isinstance(x, tuple):
-        img, size, selected_translator, target_language, detector, direction = x
-    else:
-        return x
-    task_id = secrets.token_hex(16)
-    print(f'New `manual-translate` task {task_id}')
-    os.makedirs(f'result/{task_id}/', exist_ok=True)
-    img.save(f'result/{task_id}/input.png')
-    now = time.time()
-    QUEUE.append(task_id)
-    # TODO: Add form fields to manual translate website
-    TASK_DATA[task_id] = {
-        # 'detection_size': size,
-        'manual': True,
-        # 'detector': detector,
-        # 'direction': direction,
-        'created_at': now,
-        'requested_at': now,
-    }
-    print(TASK_DATA[task_id])
-    TASK_STATES[task_id] = {
-        'info': 'pending',
-        'finished': False,
-    }
-    while True:
-        await asyncio.sleep(1)
-        if 'trans_request' in TASK_DATA[task_id]:
-            return web.json_response({'task_id' : task_id, 'status': 'pending', 'trans_result': TASK_DATA[task_id]['trans_request']})
-        if TASK_STATES[task_id]['info'].startswith('error'):
-            break
-        if TASK_STATES[task_id]['finished']:
-            # no texts detected
-            return web.json_response({'task_id' : task_id, 'status': 'successful'})
-    return web.json_response({'task_id' : task_id, 'status': 'error'})
+    # x = await handle_post(request)
+    # if isinstance(x, tuple):
+    #     img, size, selected_translator, target_language, detector, direction = x
+    # else:
+    #     return x
+    # task_id = secrets.token_hex(16)
+    # print(f'New `manual-translate` task {task_id}')
+    # os.makedirs(f'result/{task_id}/', exist_ok=True)
+    # img.save(f'result/{task_id}/input.png')
+    # now = time.time()
+    # QUEUE.append(task_id)
+    # # TODO: Add form fields to manual translate website
+    # TASK_DATA[task_id] = {
+    #     # 'detection_size': size,
+    #     'manual': True,
+    #     # 'detector': detector,
+    #     # 'direction': direction,
+    #     'created_at': now,
+    #     'requested_at': now,
+    # }
+    # print(TASK_DATA[task_id])
+    # TASK_STATES[task_id] = {
+    #     'info': 'pending',
+    #     'finished': False,
+    # }
+    # while True:
+    #     await asyncio.sleep(1)
+    #     if 'trans_request' in TASK_DATA[task_id]:
+    #         return web.json_response({'task_id' : task_id, 'status': 'pending', 'trans_result': TASK_DATA[task_id]['trans_request']})
+    #     if TASK_STATES[task_id]['info'].startswith('error'):
+    #         break
+    #     if TASK_STATES[task_id]['finished']:
+    #         # no texts detected
+    #         return web.json_response({'task_id' : task_id, 'status': 'successful'})
+    # return web.json_response({'task_id' : task_id, 'status': 'error'})
 
 app.add_routes(routes)
 
